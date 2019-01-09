@@ -1,10 +1,12 @@
 import networkx as nx
+import xml.etree.ElementTree as ET
 from Demand import Demand
 
 class Network(object):
     modularity = 1
     cities = []         #Additional table for cities required since edges are represent by cities' names in UML and by indexex in nx.Graph.
     demands = []
+    linkIDs = []
     graph = nx.Graph()
 
     def __init__(self, toModularity):
@@ -38,28 +40,37 @@ class Network(object):
             print(demand)
 
     def readNetwork(self):
-        #To be done
-        1==1;   #Some NOP for avoiding errors
+        tree = ET.parse('polska.xml')
+        root = tree.getroot()
 
-#same sample code for test purposes
+        for child in root[0][0]:  # t petla wczytuje miasta
+            for key, val in child.attrib.items():
+                G.addNode(val)
+
+        edges = []
+        for child in root[0][1]:  # ta petla wczytuje krawedzie
+            G.addEdge(child[0].text, child[1].text, 0)
+            edges.append([G.cities.index(child[0].text), G.cities.index(child[1].text)])
+            for key, val in child.attrib.items():
+                G.linkIDs.append(val)
+
+        sciezki = []
+        sciezka = []
+        for child in root[1]:  # tutaj wczytujemy zapotrzebowania i sciezki
+            del sciezki[:]
+            for links in child[3]:
+                sciezka.clear()
+                for link in links:
+                    sciezka.append(edges[G.linkIDs.index(link.text)])
+                sciezki.append(sciezka.copy())
+
+            for key, val in child.attrib.items():
+                G.addDemand(val, child[2].text, sciezki)
+        return G
+
 G = Network(5)
-G.addNode('Warszawa')
-G.addNode('Plock')
-G.addNode('Krakow')
-G.printNodes()
-
-G.addEdge('Warszawa', 'Plock', 10)
-G.addEdge('Plock', 'Krakow', 17)
-G.addEdge('Krakow', 'Warszawa', 7)
-G.printEdges()
-
-
-toLinks1 = [[0,1], [1,2]]
-toLinks2 = [[0,2]]
-paths = []
-paths.append(toLinks1)
-paths.append(toLinks2)
-
-G.addDemand('demand0_2', 50, paths)
+G.readNetwork()
 print("DEMANDS: ")
 G.printDemands()
+G.printNodes()
+G.printEdges()

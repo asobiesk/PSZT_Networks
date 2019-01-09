@@ -6,6 +6,7 @@ class Demand(object):
     def __init__(self, id, capacity):
         self.demand_id = id
         self.capacity = capacity
+        self.paths = []
 
     def __str__(self):
         return "ID: %s:, Capacity: %s, Admissable paths: %s" % (self.demand_id, self.capacity, self.paths)
