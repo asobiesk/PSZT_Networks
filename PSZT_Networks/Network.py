@@ -1,6 +1,7 @@
 import networkx as nx
 import xml.etree.ElementTree as ET
 from Demand import Demand
+from Chromosome import Chromosome
 
 class Network(object):
     modularity = 1
@@ -71,6 +72,11 @@ class Network(object):
 G = Network(5)
 G.readNetwork()
 print("DEMANDS: ")
-G.printDemands()
-G.printNodes()
-G.printEdges()
+populacja = []
+for x in range(0, 2):
+    Ch = Chromosome()
+    Ch.generate_random(G.demands)
+    populacja.append(Ch)
+#G.printDemands()
+#G.printNodes()
+#G.printEdges()
