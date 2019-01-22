@@ -46,7 +46,8 @@ def mutate(population):
         spec.mutate(mutation_chance)
 
 def selectNewPopulation(population):
-
+    mutate(population)
+    return cross(population)
 
 modularity = readModularity()
 network = Network(modularity)
@@ -65,8 +66,6 @@ while True:
         printResult(best_result)
         break
 
-    cross(population)
-    mutate(population)
     population = selectNewPopulation(population)
     counter += 1
 
