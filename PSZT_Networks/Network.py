@@ -5,7 +5,7 @@ from Chromosome import Chromosome
 
 class Network(object):
     modularity = 1
-    cities = []         #Additional table for cities required since edges are represent by cities' names in UML and by indexex in nx.Graph.
+    cities = []         # Additional table for cities required since edges are represent by cities' names in UML and by indexex in nx.Graph.
     demands = []
     linkIDs = []
     graph = nx.Graph()
@@ -28,11 +28,11 @@ class Network(object):
             demand.addPath(path)
         self.demands.append(demand)
 
-    def printNodes(self):           #Not good looking, but necessary to print detalis of every node
+    def printNodes(self):           # Not good looking, but necessary to print details of every node
         for i in range(self.graph.number_of_nodes()):
             print(i, self.graph.nodes[i])
 
-    def printEdges(self):           #Not good looking, but necessary to print detalis of every edge
+    def printEdges(self):           # Not good looking, but necessary to print details of every edge
         for edge in self.graph.edges:
             print(edge, self.graph.edges[edge])
 
@@ -72,11 +72,7 @@ class Network(object):
 G = Network(5)
 G.readNetwork()
 print("DEMANDS: ")
-populacja = []
-for x in range(0, 2):
-    Ch = Chromosome()
-    Ch.generate_random(G.demands)
-    populacja.append(Ch)
+
 #G.printDemands()
 #G.printNodes()
 #G.printEdges()
