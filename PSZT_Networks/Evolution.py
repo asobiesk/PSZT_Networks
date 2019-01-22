@@ -38,7 +38,7 @@ def cross(population):
         i += 1
     new_population = population + children
     new_population.sort()
-    new_population[:population_size]
+    new_population = new_population[:population_size]
     return new_population
 
 def mutate(population):
