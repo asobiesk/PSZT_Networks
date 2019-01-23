@@ -20,13 +20,20 @@ class Network(object):
     def addEdge(self, city1, city2, toCapacity):
         index1 = self.cities.index(city1)
         index2 = self.cities.index(city2)
-        self.graph.add_edge(index1, index2, capacity=toCapacity, systems=(toCapacity//self.modularity))
+        self.graph.add_edge(index1, index2, c1 = index1, c2 = index2, capacity=toCapacity, systems=(toCapacity//self.modularity))
 
     def addDemand(self, id, capacity, paths):
         demand = Demand(id, capacity)
         for path in paths:
             demand.addPath(path)
         self.demands.append(demand)
+
+    def findIndex(self, index1, index2):
+        counter = 0
+        for edge in self.graph.edges:
+            if edge[0] == index1 and edge[1]==index2:
+                return counter
+            counter += 1
 
     def printNodes(self):           # Not good looking, but necessary to print details of every node
         for i in range(self.graph.number_of_nodes()):
@@ -46,14 +53,14 @@ class Network(object):
 
         for child in root[0][0]:  # t petla wczytuje miasta
             for key, val in child.attrib.items():
-                G.addNode(val)
+                self.addNode(val)
 
         edges = []
         for child in root[0][1]:  # ta petla wczytuje krawedzie
-            G.addEdge(child[0].text, child[1].text, 0)
-            edges.append([G.cities.index(child[0].text), G.cities.index(child[1].text)])
+            self.addEdge(child[0].text, child[1].text, 0)
+            edges.append([self.cities.index(child[0].text), self.cities.index(child[1].text)])
             for key, val in child.attrib.items():
-                G.linkIDs.append(val)
+                self.linkIDs.append(val)
 
         sciezki = []
         sciezka = []
@@ -62,12 +69,12 @@ class Network(object):
             for links in child[3]:
                 sciezka.clear()
                 for link in links:
-                    sciezka.append(edges[G.linkIDs.index(link.text)])
+                    sciezka.append(edges[self.linkIDs.index(link.text)])
                 sciezki.append(sciezka.copy())
 
             for key, val in child.attrib.items():
-                G.addDemand(val, child[2].text, sciezki)
-        return G
+                self.addDemand(val, child[2].text, sciezki)
+        return self
 
 #G = Network(5)
 #G.readNetwork()

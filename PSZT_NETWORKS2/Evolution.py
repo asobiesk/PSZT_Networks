@@ -9,7 +9,7 @@ last_result = 0 # Tutaj trzymac bedziemy ostatni wynik
 epsilon = 0.1
 max_small_increase = 5
 current_small_increase = 0
-max_repeats = 5
+max_repeats = 100
 counter = 0 # Licznik obiegow petli
 population = []
 population_size = 2
@@ -20,17 +20,21 @@ best_result = 0
 def generateStartPopulation(network):
     new_population = []
     for x in range(0, population_size):
+        print("robie nowego randa")
         Ch = Chromosome([], network)
         Ch.generate_random(network.demands)
+        print(Ch.chrom)
         new_population.append(Ch)
     return new_population
 
 def countBestUnit(population):
-        best = population[0]
-        for spec in population:
-            if spec.number_of_visits() < best.number_of_visits():
+       best = population[0]
+       #print("Current best: ", best.number_of_visits())
+       for spec in population:
+           #print("current spec: ", spec.number_of_visits())
+           if spec.number_of_visits() < best.number_of_visits():
                 best = spec
-        return best
+       return best
 
 def cross(population):
     i = 0
@@ -53,7 +57,9 @@ def selectNewPopulation(population):
 
 def printResult(result):
     print("Wyniki: ")
-    print("Minimalna znaleziona liczba wizyt: ", result.number_of_visits())
+    print("Minimalna znaleziona liczba wizyt: ")
+    wynik = result.number_of_visits()
+    print(wynik)
     print("Sciezki: ")
     print(result.chrom)
 
@@ -63,12 +69,21 @@ def printResult(result):
 
 #modularity = readModularity()
 print("ZAczyanm")
-modularity = 5
+modularity = 100
 network = Network(modularity)
+network.readNetwork()
 print("")
 population = generateStartPopulation(network)
-print("PETLA")
 
+print(population[0].chrom)
+print(population[1].chrom)
+print("NAJLEPSZY WYNIK W RANDOMIE: ")
+#zajebioza = countBestUnit(population)
+#print(zajebioza.number_of_visits())
+print("PETLA")
+network.printNodes()
+network.printEdges()
+network.printDemands()
 while True:
     print("W petli")
     best_unit = countBestUnit(population)
@@ -76,6 +91,7 @@ while True:
 
     if(counter == max_repeats):
         printResult(best_unit)
+        break
 
     if(abs(best_result - last_result) <= epsilon):
         current_small_increase += 1
@@ -84,6 +100,8 @@ while True:
         printResult(best_unit)
         break
 
+    print("Obieg: ", counter)
+    print("Wynik: ", best_result)
     population = selectNewPopulation(population)
     counter += 1
 

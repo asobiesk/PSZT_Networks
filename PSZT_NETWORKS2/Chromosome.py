@@ -1,13 +1,14 @@
 import random
 from Demand import Demand
 from Network import Network
+import math
 
 
 class Chromosome(object):
     chrom = []
 
     def __init__(self, chrom, network):
-        self.chrom = []
+        self.chrom = chrom
         self.network = network
 
     def generate_random(self, demands):
@@ -25,20 +26,40 @@ class Chromosome(object):
             self.chrom.append(pom)
 
     def number_of_visits(self):
-        visits = 0
+        edges = []
+        for i in range (self.network.graph.number_of_edges()):
+            edges.append(0)
+
+        for demand in range(len(self.chrom)):
+            for path in self.network.demands[demand].paths:
+                    for edge in path:
+                        if edges[self.network.findIndex(int(edge[0]), int(edge[1]))] < float(self.network.demands[i].capacity):
+                            edges[self.network.findIndex(int(edge[0]), int(edge[1]))] = float(self.network.demands[i].capacity)
+
+        numberOfSystems = 0
+        for i in edges:
+            numberOfSystems += math.ceil(i/self.network.modularity)
+
+        return numberOfSystems
+
+
+    def printBestConfig(self):
+        edges = []
+        for i in range(self.network.graph.number_of_edges()):
+            edges.append(0)
+
         for i in range(len(self.chrom)):
             for j in range(len(self.chrom[i])):
-                prev_upgraded = False
-                for edge in self.network.demands[i].paths[j]:
-                    if self.chrom[i][j] + edge['capacity'] % self.network.modularity > self.network.modularity:
-                        if prev_upgraded:
-                            visits += 1
-                        else:
-                            visits += 2
-                            prev_upgraded = True
-                    else:
-                        prev_upgraded = False
-        return visits
+                for path in self.network.demands[i].paths:
+                    for edge in path:
+                        edges[edge[0]] += self.chrom[i][j]
+                        edges[edge[1]] += self.chrom[i][j]
+
+
+
+
+
+
 
     def __lt__(self, other):
         return self.number_of_visits() < other.number_of_visits()
@@ -70,5 +91,5 @@ class Chromosome(object):
             cap = sum(self.chrom[choice])
             for i in range(0, len(self.chrom[choice])):
                 rand = random.randint(0, cap)
-                cap -= rand
                 self.chrom[choice][i] = rand
+            random.shuffle(self.chrom[choice])
