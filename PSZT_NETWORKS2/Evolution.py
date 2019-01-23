@@ -6,11 +6,10 @@ import math
 # Petle wykonujemy, dopoki najlepszy wynik nie bedzie sie roznil o mniej niz EPSILON w MAX_SMALL_INCREASE probach pod rzad...
 # ... lub petla wykona sie juz MAX_REPEATS razy
 
-last_result = 0 # Tutaj trzymac bedziemy ostatni wynik
 epsilon = 1
 max_small_increase = 100
 current_small_increase = 0
-max_repeats = 100
+max_repeats = 10
 counter = 0 # Licznik obiegow petli
 population = []
 population_size = 5
@@ -20,10 +19,8 @@ best_result = 0
 def generateStartPopulation(network):
     new_population = []
     for x in range(0, population_size):
-        print("robie nowego randa")
         Ch = Chromosome([], network)
         Ch.generate_random(network.demands)
-        print(Ch.chrom)
         new_population.append(Ch)
     return new_population
 
@@ -68,12 +65,11 @@ def printResult(result):
 
 
 
-#main function
+####################################main function###########################################################
 
-#modularity = readModularity()
-print("ZAczyanm")
-modularity = 100
-network = Network(modularity)
+modularity = int(input("Podaj modularność grafu: "))
+option = int(input("Podaj opcję: [0] Przepustowości się nie sumują [1] Przepustowości się sumują"))
+network = Network(modularity, option)
 network.readNetwork()
 print("")
 population = generateStartPopulation(network)

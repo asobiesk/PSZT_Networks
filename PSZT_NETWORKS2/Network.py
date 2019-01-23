@@ -8,10 +8,12 @@ class Network(object):
     cities = []         # Additional table for cities required since edges are represent by cities' names in UML and by indexex in nx.Graph.
     demands = []
     linkIDs = []
+    option = 0 #Working mode
     graph = nx.Graph()
 
-    def __init__(self, toModularity):
+    def __init__(self, toModularity, toOption):
         self.modularity = toModularity
+        self.option = toOption
 
     def addNode(self, city):
         self.cities.append(city)
