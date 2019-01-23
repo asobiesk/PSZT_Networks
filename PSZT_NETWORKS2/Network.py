@@ -9,11 +9,13 @@ class Network(object):
     demands = []
     linkIDs = []
     option = 0 #Working mode
+    country = 0 #Predefined country
     graph = nx.Graph()
 
-    def __init__(self, toModularity, toOption):
+    def __init__(self, toModularity, toOption, toCountry):
         self.modularity = toModularity
         self.option = toOption
+        self.country = toCountry
 
     def addNode(self, city):
         self.cities.append(city)
@@ -31,11 +33,13 @@ class Network(object):
         self.demands.append(demand)
 
     def findIndex(self, index1, index2):
+        #print("Jestem w findindex")
         counter = 0
         for edge in self.graph.edges:
-            if edge[0] == index1 and edge[1]==index2:
+            if (edge[0] == index1 and edge[1]==index2) or (edge[0] == index2 and edge[1] == index1):
                 return counter
             counter += 1
+        #print("Nie zwracam nic!!!!")
 
     def printNodes(self):           # Not good looking, but necessary to print details of every node
         for i in range(self.graph.number_of_nodes()):
@@ -50,7 +54,11 @@ class Network(object):
             print(demand)
 
     def readNetwork(self):
-        tree = ET.parse('polska.xml')
+        tree = 0
+        if(self.country == 0):
+            tree = ET.parse('polska.xml')
+        else:
+            tree = ET.parse('stany.xml')
         root = tree.getroot()
 
         for child in root[0][0]:  # t petla wczytuje miasta
@@ -68,20 +76,54 @@ class Network(object):
         sciezka = []
         for child in root[1]:  # tutaj wczytujemy zapotrzebowania i sciezki
             del sciezki[:]
-            for links in child[3]:
-                sciezka.clear()
-                for link in links:
-                    sciezka.append(edges[self.linkIDs.index(link.text)])
-                sciezki.append(sciezka.copy())
+            if(self.country == 0):
+                for links in child[3]:
+                    sciezka.clear()
+                    for link in links:
+                        sciezka.append(edges[self.linkIDs.index(link.text)])
+                    sciezki.append(sciezka.copy())
 
             for key, val in child.attrib.items():
                 self.addDemand(val, child[2].text, sciezki)
+
         return self
 
-#G = Network(5)
-#G.readNetwork()
-#print("DEMANDS: ")
+    def addPaths(self):
+        for i in range (0, len(self.cities)):
+            for j in range (0, len(self.cities)):
+                if i == j:
+                    continue
+                if(len(self.demands[i*len(self.cities)-i+j].paths) == 0):
+                    pathsToAdd = self.findPaths(i, j)
+                    for path in pathsToAdd:
+                        self.demands[i*len(self.cities)-i+j].paths.append(path)
 
-#G.printDemands()
-#G.printNodes()
-#G.printEdges()
+        for demand in self.demands:
+            if len(demand.paths) == 0:
+                self.demands.pop(self.demands.index(demand))
+
+
+    def findPaths(self, id1, id2):
+        paths = nx.all_simple_paths(self.graph, id1, id2, 10)
+        paths_pairwise = map(nx.utils.pairwise, paths)
+        pathsParsed = []
+        for path in paths_pairwise:
+            pathsParsed.append(list(path))
+        pathsParsed.sort(key=len)
+        pathsToAdd = pathsParsed[:5]
+
+        result = []
+
+        for p in pathsToAdd:
+            tuplePath = []
+            for edge in p:
+                tupleEdge = []
+                for node in edge:
+                    tupleEdge.append(node)
+                tuplePath.append(tupleEdge)
+            result.append(tuplePath)
+
+        return result
+
+
+

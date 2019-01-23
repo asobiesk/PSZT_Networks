@@ -1,6 +1,8 @@
 from Network import Network
 from Chromosome import Chromosome
 import random
+import networkx as nx
+
 import math
 # Main loop template
 # Petle wykonujemy, dopoki najlepszy wynik nie bedzie sie roznil o mniej niz EPSILON w MAX_SMALL_INCREASE probach pod rzad...
@@ -39,7 +41,6 @@ def cross(population):
         i += 1
     new_population = population + children
     new_population.sort()
-    #random.shuffle(new_population)
     new_population = new_population[:population_size]
     return new_population
 
@@ -67,13 +68,23 @@ def printResult(result):
 
 ####################################main function###########################################################
 
-modularity = int(input("Podaj modularność grafu: "))
-option = int(input("Podaj opcję: [0] Przepustowości się nie sumują [1] Przepustowości się sumują"))
-network = Network(modularity, option)
+country = int(input("Ktora siec? [0]Polska [1]Stany Zjednoczone  "))
+modularity = int(input("Podaj modularność grafu:  "))
+option = int(input("Podaj opcję: [0] Przepustowości się nie sumują [1] Przepustowości się sumują  "))
+
+
+network = Network(modularity, option, country)
+
 network.readNetwork()
+if(country != 0):
+    print("Trwa generowanie sciezek...")
+    network.addPaths()
+    print("Wygenerowano sciezki")
+
 print("")
 population = generateStartPopulation(network)
 last_result = 0
+
 
 while True:
     print("W petli")
@@ -103,5 +114,6 @@ while True:
     counter += 1
     last_result = best_result
 print("Skonczylem")
+
 
 
