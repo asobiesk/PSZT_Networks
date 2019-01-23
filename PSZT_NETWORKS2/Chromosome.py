@@ -79,3 +79,16 @@ class Chromosome(object):
                 self.chrom[choice][i] = rand
                 cap -= rand
         random.shuffle(self.chrom[choice])
+
+    def returnBestConfig(self):
+        edges = []
+        for i in range(self.network.graph.number_of_edges()):
+            edges.append(0)
+
+        for i in range(len(self.chrom)):
+            for j in range(len(self.chrom[i])):
+                for edge in self.network.demands[i].paths[j]:
+                    if edges[self.network.findIndex(int(edge[0]), int(edge[1]))] < float(self.chrom[i][j]):
+                        edges[self.network.findIndex(int(edge[0]), int(edge[1]))] = float(self.chrom[i][j])
+
+        return edges

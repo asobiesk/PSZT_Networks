@@ -1,7 +1,7 @@
 from Network import Network
 from Chromosome import Chromosome
 import random
-
+import math
 # Main loop template
 # Petle wykonujemy, dopoki najlepszy wynik nie bedzie sie roznil o mniej niz EPSILON w MAX_SMALL_INCREASE probach pod rzad...
 # ... lub petla wykona sie juz MAX_REPEATS razy
@@ -10,10 +10,10 @@ last_result = 0 # Tutaj trzymac bedziemy ostatni wynik
 epsilon = 1
 max_small_increase = 100
 current_small_increase = 0
-max_repeats = 3
+max_repeats = 100
 counter = 0 # Licznik obiegow petli
 population = []
-population_size = 4
+population_size = 5
 mutation_chance = 5
 best_result = 0
 
@@ -59,8 +59,12 @@ def printResult(result):
     print("Minimalna znaleziona liczba wizyt: ")
     wynik = result.number_of_visits()
     print(wynik)
-    print("Sciezki: ")
-    print(result.chrom)
+    print("Krawedzie: ")
+    edges = result.returnBestConfig()
+    i=0
+    for krawedz in network.graph.edges:
+        print(network.cities[krawedz[0]], network.cities[krawedz[1]], edges[i], math.ceil(edges[i]/network.modularity))
+        i += 1
 
 
 
@@ -68,7 +72,7 @@ def printResult(result):
 
 #modularity = readModularity()
 print("ZAczyanm")
-modularity = 69
+modularity = 100
 network = Network(modularity)
 network.readNetwork()
 print("")
