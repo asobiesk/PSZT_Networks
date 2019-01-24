@@ -9,7 +9,6 @@ class Chromosome(object):
     chrom = []
 
     def __init__(self, chrom, network):
-        #self.chrom = []
         self.chrom = copy.deepcopy(chrom)
         self.network = network
 
@@ -23,8 +22,9 @@ class Chromosome(object):
                 rand = random.randint(0, cap)
                 cap -= rand
                 pom.append(rand)
+            if cap > 0:
+                pom[random.randint(0, len(pom)-1)] += cap
             random.shuffle(pom)
-            #print(pom)
             self.chrom.append(pom)
 
     def number_of_visits(self):
@@ -70,18 +70,38 @@ class Chromosome(object):
         else:
             return result2
 
-
     def mutate(self, mutation_chance=5):
         random.seed()
-
-        choice = random.randint(0, len(self.chrom)-1)
-        cap = sum(self.chrom[choice])
-        for i in range(0, len(self.chrom[choice])):
+        for gen in self.chrom:
             if random.randrange(0, 100) < mutation_chance:
-                rand = random.randint(0, cap)
-                self.chrom[choice][i] = rand
-                cap -= rand
-        random.shuffle(self.chrom[choice])
+                cap = sum(gen)
+                for i in range(0,len(gen)):
+                    gen[i] = 0
+                ktoraWersja = random.randrange(0, 100)
+                if ktoraWersja > 75:
+                    for i in range(0,len(gen)):
+                        rand = random.randint(0, cap)
+                        gen[i] = rand
+                        cap -= rand
+                    if cap > 0:
+                        gen[random.randint(0, len(gen) - 1)] += cap
+                else:
+                    if ktoraWersja < 25:
+                        for i in range(0,cap):
+                            index = random.randint(0, len(gen)-1)
+                            gen[index] += 1
+                    else:
+                        capHalf = int(cap/2)
+                        for i in range(0,len(gen)):
+                            rand = random.randint(0, capHalf)
+                            gen[i] = rand
+                            capHalf -= rand
+                        if capHalf > 0:
+                            gen[random.randint(0, len(gen) - 1)] += capHalf
+                        for i in range(0,cap - int(cap/2)):
+                            index = random.randint(0, len(gen)-1)
+                            gen[index] += 1
+                random.shuffle(gen)
 
     def returnBestConfig(self):
         edges = []

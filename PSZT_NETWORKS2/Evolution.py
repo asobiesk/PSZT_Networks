@@ -1,6 +1,7 @@
 from Network import Network
 from Chromosome import Chromosome
 import random
+import copy
 import networkx as nx
 
 import math
@@ -11,10 +12,10 @@ import math
 epsilon = 1
 max_small_increase = 100
 current_small_increase = 0
-max_repeats = 10
+max_repeats = 100
 counter = 0 # Licznik obiegow petli
 population = []
-population_size = 5
+population_size = 10
 mutation_chance = 5
 best_result = 0
 
@@ -67,7 +68,6 @@ def printResult(result):
 
 
 ####################################main function###########################################################
-
 country = int(input("Ktora siec? [0]Polska [1]Stany Zjednoczone  "))
 modularity = int(input("Podaj modularność grafu:  "))
 option = int(input("Podaj opcję: [0] Przepustowości się nie sumują [1] Przepustowości się sumują  "))
@@ -83,17 +83,22 @@ if(country != 0):
 
 print("")
 population = generateStartPopulation(network)
-last_result = 0
-
+last_result = float('inf')
+bestResoultTillNow = countBestUnit(population)
 
 while True:
     print("W petli")
     best_unit = countBestUnit(population)
     best_result = best_unit.number_of_visits()
 
+    if (best_unit < bestResoultTillNow):
+        bestResoultTillNow = copy.deepcopy(best_unit)
+
     if(counter == max_repeats):
-        printResult(best_unit)
+        printResult(bestResoultTillNow)
         break
+
+
 
     if(abs(best_result - last_result) <= epsilon):
         current_small_increase += 1
@@ -101,7 +106,7 @@ while True:
         current_small_increase = 0
 
     if(current_small_increase == max_small_increase):
-        printResult(best_unit)
+        printResult(bestResoultTillNow)
         break
 
     print("Obieg: ", counter)
@@ -109,6 +114,10 @@ while True:
 
     for i in population:
         print(i.chrom)
+
+    if (last_result < best_result):
+        printResult(bestResoultTillNow)
+        break
 
     population = selectNewPopulation(population)
     counter += 1
