@@ -115,9 +115,7 @@ while True:
     for i in population:
         print(i.chrom)
 
-    if (last_result < best_result):
-        printResult(bestResoultTillNow)
-        break
+
 
     population = selectNewPopulation(population)
     counter += 1
